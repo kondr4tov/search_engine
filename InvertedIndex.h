@@ -1,0 +1,8 @@
+//
+// Created by Андрей Кондратов on 07.04.2022.
+//
+
+#ifndef SEARCH_ENGINE_INVERTEDINDEX_H
+#define SEARCH_ENGINE_INVERTEDINDEX_H
+
+#endif //SEARCH_ENGINE_INVERTEDINDEX_H
