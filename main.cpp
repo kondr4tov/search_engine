@@ -7,10 +7,7 @@
 
 int main() {
 
-    InvertedIndex test;
-    std::vector<std::string> vec;
-
-    test.UpdateDocumentBase(vec);
+    ConvertJSON test;
 
     return 0;
 }
