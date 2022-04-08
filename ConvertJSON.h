@@ -27,8 +27,6 @@ class ConvertJSON {
 public:
     ConvertJSON() = default;
 
-    //Read configuration data from JSON
-    std::string reading();
     std::vector<std::string> GetTextDocuments();
     int GetResponseLimit();
     std::vector<std::string> GetRequest();

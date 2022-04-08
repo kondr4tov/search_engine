@@ -1,24 +1,5 @@
 #include "ConvertJSON.h"
 
-std::string ConvertJSON::reading() {
-    std::ifstream file ("config.json");
-
-    if(!file.is_open()) {
-        throw ConfigFileIsNotOpenException();
-    }
-
-    file >> dict;
-
-    if(dict["config"].empty()) {
-        throw ConfigFieldIsNotFindException();
-    }
-
-    std::string str = dict.dump(4);
-
-    file.close();
-    return str;
-};
-
 std::vector<std::string> ConvertJSON::GetTextDocuments() {
 
     std::ifstream file("config.json");
@@ -31,21 +12,9 @@ std::vector<std::string> ConvertJSON::GetTextDocuments() {
 
     file >> j;
 
-//        for(auto it = j.begin(); it != j.end(); it++) {
-//
-//            if(!it.value().is_array()) {
-//                nlohmann::json j2;
-//                j2 = it.value();
-//                for(auto it2 = j2.begin(); it2 != j2.end(); it2++) {
-//                    vec.push_back(it2.value());
-//                }
-//            }
-//            else {
-//                for(auto i : it.value()) {
-//                    vec.push_back(i);
-//                }
-//            }
-//        }
+    for (auto it = j["files"].begin(); it != j["files"].end(); it++) {
+        vec.push_back(it.value());
+    }
 
     file.close();
     return vec;
