@@ -1,8 +1,74 @@
 #include "InvertedIndex.h"
+#include <gtest/gtest.h>
+
+using namespace std;
+void TestInvertedIndexFunctionality(
+        const vector<string>& docs,
+        const vector<string>& requests,
+        const std::vector<vector<Entry>>& expected
+) {
+    std::vector<std::vector<Entry>> result;
+    InvertedIndex idx;
+    idx.UpdateDocumentBase(docs);
+    for(auto& request : requests) {
+        std::vector<Entry> word_count = idx.GetWordCount(request);
+        result.push_back(word_count);
+    }
+    ASSERT_EQ(result, expected);
+}
+TEST(TestCaseInvertedIndex, TestBasic) {
+const vector<string> docs = {
+        "london is the capital of great britain",
+        "big ben is the nickname for the Great bell of the striking clock"
+};
+const vector<string> requests = {"london", "the"};
+const vector<vector<Entry>> expected = {
+        {
+                {0, 1}
+        }, {
+                {0, 1}, {1, 3}
+        }
+};
+    TestInvertedIndexFunctionality(docs, requests, expected);
+}
+TEST(TestCaseInvertedIndex, TestBasic2) {
+    const vector<string> docs = {
+            "milk milk milk milk water water water",
+            "milk water water",
+            "milk milk milk milk milk water water water water water",
+            "Americano Cappuccino"
+    };
+    const vector<string> requests = {"milk", "water", "cappuchino"};
+    const vector<vector<Entry>> expected = {
+            {
+                    {0, 4}, {1, 1}, {2, 5}
+            }, {
+                    {0, 2}, {1, 2}, {2, 5}
+            }, {
+                    {3, 1}
+            }
+    };
+    TestInvertedIndexFunctionality(docs, requests, expected);
+}
+TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
+    const vector<string> docs = {
+            "a b c d e f g h i j k l",
+            "statement"
+    };
+    const vector<string> requests = {"m", "statement"};
+    const vector<vector<Entry>> expected = {
+            {
+                    {}
+            }, {
+                    {1, 1}
+            }
+    };
+    TestInvertedIndexFunctionality(docs, requests, expected);
+}
 
 void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, std::vector<Entry>>& freq_dictionary) {
 
-    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    //std::transform(str.begin(), str.end(), str.begin(), tolower);
 
     //remove punctuation
     for(int i = 0; i < str.length(); i++) {
@@ -57,13 +123,15 @@ void InvertedIndex::UpdateDocumentBase (std::vector<std::string> input_docs) {
 
     //vector of threads
     std::vector<std::thread> th_vec;
+    std::mutex mutex;
+
 
     //initialization of threads
     for(int i = 0; i < input_docs.size(); i++) {
-        std::thread th(IndexInsideUpdate, input_docs[i], i, freq_dictionary);
-        th_vec.push_back(th);
+        mutex.lock();
+        th_vec.push_back(std::thread(IndexInsideUpdate, input_docs[i], i, std::ref(freq_dictionary)));
+        mutex.unlock();
     }
-
     //join to all threads
     for(int i = 0; i < input_docs.size(); i++) {
         th_vec[i].join();
