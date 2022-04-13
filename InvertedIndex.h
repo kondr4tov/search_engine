@@ -4,6 +4,7 @@
 #include <exception>
 #include <filesystem>
 #include <map>
+#include <thread>
 
 #ifndef SEARCH_ENGINE_INVERTEDINDEX_H
 #define SEARCH_ENGINE_INVERTEDINDEX_H

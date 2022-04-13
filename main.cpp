@@ -5,9 +5,12 @@
 #include "InvertedIndex.h"
 #include "ConvertJSON.h"
 
+
 int main() {
 
-    ConvertJSON test;
+    std::string str = "abr.s nmfsknzz kfnksn kjfnzzsdf, fjnd, kjnj. Azm f  dnfk  123i, jfnks jf.";
+    InvertedIndex test;
 
-    return 0;
+
+  return 0;
 }

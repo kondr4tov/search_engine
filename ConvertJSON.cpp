@@ -11,12 +11,18 @@ std::vector<std::string> ConvertJSON::GetTextDocuments() {
     }
 
     file >> j;
+    file.close();
 
     for (auto it = j["files"].begin(); it != j["files"].end(); it++) {
-        vec.push_back(it.value());
+        std::ifstream fileData;
+        fileData.open(it.value());
+        std::stringstream str;
+
+        str << fileData.rdbuf();
+
+        vec.push_back(str.str());
     }
 
-    file.close();
     return vec;
 };
 
