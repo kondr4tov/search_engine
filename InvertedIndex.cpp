@@ -38,12 +38,12 @@ TEST(TestCaseInvertedIndex, TestBasic2) {
             "milk milk milk milk milk water water water water water",
             "Americano Cappuccino"
     };
-    const vector<string> requests = {"milk", "water", "cappuchino"};
+    const vector<string> requests = {"milk", "water", "cappuccino"};
     const vector<vector<Entry>> expected = {
             {
                     {0, 4}, {1, 1}, {2, 5}
             }, {
-                    {0, 2}, {1, 2}, {2, 5}
+                    {0, 3}, {1, 2}, {2, 5}
             }, {
                     {3, 1}
             }
@@ -68,7 +68,8 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
 
 void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, std::vector<Entry>>& freq_dictionary) {
 
-    //std::transform(str.begin(), str.end(), str.begin(), tolower);
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
     //remove punctuation
     for(int i = 0; i < str.length(); i++) {
@@ -88,12 +89,12 @@ void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, s
     }
 
     std::map<std::string, std::vector<Entry>> myMap;
-    std::vector<Entry> toMapVec;
     Entry entry;
     std::mutex m;
 
     //fill the map
     for(auto i : result) {
+        std::vector<Entry> toMapVec;
         if(myMap.count(i) == 0) {
             entry.doc_id = numberOfDoc;
             entry.count = 1;
@@ -109,7 +110,7 @@ void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, s
     m.lock();
     for(auto it = myMap.begin(); it != myMap.end(); it++) {
         if(freq_dictionary.count(it->first) == 0) {
-            freq_dictionary.insert(std::make_pair(it->first, toMapVec));
+            freq_dictionary.insert(std::make_pair(it->first, it->second));
         }
         else {
             Entry entry1;
@@ -144,12 +145,13 @@ void InvertedIndex::UpdateDocumentBase (std::vector<std::string> input_docs) {
 std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
 
     Entry entry;
-    std::vector<Entry> vec;
+    std::vector<Entry> vec = {};
 
-    for(int i = 0; i < freq_dictionary.find(word)->second.size(); i++) {
-        entry.count = freq_dictionary.find(word)->second[i].count;
-        entry.doc_id = freq_dictionary.find(word)->second[i].doc_id;
-        vec.push_back(entry);
+    if(freq_dictionary.count(word) != 0) {
+        for (int i = 0; i < freq_dictionary.find(word)->second.size(); i++) {
+            entry = freq_dictionary.find(word)->second[i];
+            vec.push_back(entry);
+        }
     }
 
     return vec;
