@@ -146,24 +146,12 @@ std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
     Entry entry;
     std::vector<Entry> vec;
 
-    for(int i = 0; i < docs.size(); i++) {
-        std::ifstream file(docs[i]);
-
-        std::string currentWord;
-        int count = 0;
-
-        while (!file.eof()) {
-            file >> currentWord;
-            count += (currentWord == word);
-        }
-
-        entry.count = count;
-        entry.doc_id = i;
+    for(int i = 0; i < freq_dictionary.find(word)->second.size(); i++) {
+        entry.count = freq_dictionary.find(word)->second[i].count;
+        entry.doc_id = freq_dictionary.find(word)->second[i].doc_id;
         vec.push_back(entry);
-        freq_dictionary.insert(std::pair<std::string, std::vector<Entry>>(word, vec));
-
-        file.close();
     }
+
     return vec;
 };
 
