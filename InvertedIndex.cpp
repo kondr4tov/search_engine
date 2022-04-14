@@ -101,7 +101,7 @@ void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, s
             myMap.insert(std::make_pair(i,toMapVec));
         }
         else {
-            myMap.find(i)->second[0].count += 1;
+            myMap.find(i)->second[0].count++;
         }
     }
 
@@ -112,7 +112,10 @@ void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, s
             freq_dictionary.insert(std::make_pair(it->first, toMapVec));
         }
         else {
-            freq_dictionary.find(it->first)->second.push_back(myMap.find(it->first)->second[0]);
+            Entry entry1;
+            entry1.count = myMap.find(it->first)->second[0].count;
+            entry1.doc_id = myMap.find(it->first)->second[0].doc_id;
+            freq_dictionary.find(it->first)->second.push_back(entry1);
         }
     }
     m.unlock();
