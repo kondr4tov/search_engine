@@ -18,7 +18,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 enable_testing()
 
-add_executable(search_engine main.cpp InvertedIndex.h InvertedIndex.cpp ConvertJSON.h ConvertJSON.cpp)
+add_executable(search_engine main.cpp Headers/InvertedIndex.h Source/InvertedIndex.cpp Headers/ConvertJSON.h Source/ConvertJSON.cpp Headers/SearchServer.h Source/SearchServer.cpp)
 
 target_link_libraries(search_engine PRIVATE nlohmann_json::nlohmann_json gtest_main)
 

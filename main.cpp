@@ -1,9 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include "nlohmann/json.hpp"
-#include <exception>
-#include "InvertedIndex.h"
-#include "ConvertJSON.h"
+#include "Headers/InvertedIndex.h"
+#include "Headers/ConvertJSON.h"
+#include "Headers/SearchServer.h"
 
 
 

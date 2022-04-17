@@ -1,4 +1,4 @@
-#include "ConvertJSON.h"
+#include "../Headers/ConvertJSON.h"
 
 std::vector<std::string> ConvertJSON::GetTextDocuments() {
 

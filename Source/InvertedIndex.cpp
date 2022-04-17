@@ -1,4 +1,4 @@
-#include "InvertedIndex.h"
+#include "../Headers/InvertedIndex.h"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -58,7 +58,6 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
     const vector<string> requests = {"m", "statement"};
     const vector<vector<Entry>> expected = {
             {
-                    {}
             }, {
                     {1, 1}
             }
