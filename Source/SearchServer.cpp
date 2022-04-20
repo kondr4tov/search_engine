@@ -74,8 +74,8 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
     for(int j = 0; j < queries_input.size(); j++) {
 
-        std::transform(queries_input[j].begin(), queries_input[j].end(), queries_input[j].begin(),
-                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
+//        std::transform(queries_input[j].begin(), queries_input[j].end(), queries_input[j].begin(),
+//                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
 
         std::stringstream s(queries_input[j]);
         std::string word;
@@ -103,7 +103,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             }
         }
 
-        std::map<int, std::string> reverseUniqList;
+        std::multimap<int, std::string> reverseUniqList;
 
         for(auto it = uniqList.begin(); it != uniqList.end(); it++) {
             reverseUniqList.insert(std::make_pair(it->second, it->first));
@@ -111,35 +111,44 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         std::vector<int> docs;
 
-        auto ut = reverseUniqList.begin();
-        for(auto words : _index.freq_dictionary.find(ut->second)->second) {
-            docs.push_back(words.doc_id);
+        auto it1 = reverseUniqList.begin();
+        if(_index.freq_dictionary.count(it1->second) == 0) {
+            vecToOutput.emplace_back();
+        }
+        else {
+            for (auto words: _index.freq_dictionary.find(it1->second)->second) {
+                docs.push_back(words.doc_id);
+            }
         }
 
         std::vector<RelativeIndex> relativeIndexVec;
+        std::map<float, int> toRelevant;
+        RelativeIndex relativeIndex;
 
         for(int i = 0; i < docs.size(); i++) {
             int counter = 0;
-            int absRel = 0;
-            int otnRel;
-            RelativeIndex relativeIndex;
             for(auto it = reverseUniqList.begin(); it != reverseUniqList.end(); it++) {
                 for(int m = 0; m < _index.freq_dictionary.find(it->second)->second.size(); m++) {
                     if(_index.freq_dictionary.find(it->second)->second[m].doc_id == docs[i]) {
                         counter += _index.freq_dictionary.find(it->second)->second[m].count;
                     }
                 }
-                if(counter >= absRel) absRel = counter;
-                //here have to be else for false
-                otnRel = counter / absRel;
-                relativeIndex.doc_id = docs[i];
-                relativeIndex.rank = otnRel;
-                relativeIndexVec.push_back(relativeIndex);
             }
+            toRelevant.insert(std::make_pair(counter, docs[i]));
+        }
+
+        auto it2 = toRelevant.end();
+        it2--;
+        float absRel = it2->first;
+
+        for(auto it = toRelevant.begin(); it != toRelevant.end(); it++) {
+            float otnRel = it->first / absRel;
+            relativeIndex.doc_id = it->second;
+            relativeIndex.rank = otnRel;
+            relativeIndexVec.push_back(relativeIndex);
         }
 
         std::sort(relativeIndexVec.begin(), relativeIndexVec.end(), more_than_rank());
-
         vecToOutput.push_back(relativeIndexVec);
     }
 
