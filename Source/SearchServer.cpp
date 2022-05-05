@@ -74,10 +74,10 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
     for(int j = 0; j < queries_input.size(); j++) {
 
-//        std::transform(queries_input[j].begin(), queries_input[j].end(), queries_input[j].begin(),
-//                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
+        std::string bufferStr;
+        std::transform(queries_input[j].begin(), queries_input[j].end(), std::back_inserter(bufferStr), [](const char& c) {return std::tolower(c);});
 
-        std::stringstream s(queries_input[j]);
+        std::stringstream s(bufferStr);
         std::string word;
         std::vector<std::string> result;
 
@@ -89,16 +89,16 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         std::map<std::string, int> uniqList;
 
         for(auto i : result) {
-            size_t count = 0;
+            size_t counter = 0;
             if(uniqList.count(i) == 0) {
                 if(_index.freq_dictionary.count(i) != 0) {
                     for(auto entry : _index.freq_dictionary.find(i)->second) {
-                        count += entry.count;
+                        counter += entry.count;
                     }
-                    uniqList.insert(std::make_pair(i, count));
+                    uniqList.insert(std::make_pair(i, counter));
                 }
                 else {
-                    uniqList.insert(std::make_pair(i, count));
+                    uniqList.insert(std::make_pair(i, counter));
                 }
             }
         }
@@ -114,6 +114,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         auto it1 = reverseUniqList.begin();
         if(_index.freq_dictionary.count(it1->second) == 0) {
             vecToOutput.emplace_back();
+            continue;
         }
         else {
             for (auto words: _index.freq_dictionary.find(it1->second)->second) {
@@ -137,14 +138,17 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             toRelevant.insert(std::make_pair(counter, docs[i]));
         }
 
-        auto it2 = toRelevant.end();
-        it2--;
+        auto it2 = toRelevant.rbegin();
         float absRel = it2->first;
 
         for(auto it = toRelevant.begin(); it != toRelevant.end(); it++) {
-            float otnRel = it->first / absRel;
+            float otnRel = (it->first / absRel) + 0.04;
+            std::string helperStr = to_string(otnRel);
+            std::stringstream out;
+            out << std::fixed << std::setprecision(1) << std::stof(helperStr);
+            float otnRel2 = std::stof(out.str());
             relativeIndex.doc_id = it->second;
-            relativeIndex.rank = otnRel;
+            relativeIndex.rank = otnRel2;
             relativeIndexVec.push_back(relativeIndex);
         }
 
