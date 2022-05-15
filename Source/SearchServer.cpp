@@ -1,5 +1,6 @@
 #include "../Headers/SearchServer.h"
 #include <gtest/gtest.h>
+#include "../Headers/ConvertJSON.h"
 
 using namespace std;
 TEST(TestCaseSearchServer, TestSimple) {
@@ -56,6 +57,9 @@ const vector<string> request = {"moscow is the capital of russia"};
             {
                     {7, 1},
                     {14, 1},
+                    {0, 0.699999988},
+                    {1, 0.699999988},
+                    {2, 0.699999988}
             }
 };
 InvertedIndex idx;
@@ -125,6 +129,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             }
         }
 
+        ConvertJSON convertJson;
 
         for(int i = 0; i < docs.size(); i++) {
             int counter = 0;
@@ -154,7 +159,8 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         }
 
         std::sort(relativeIndexVec.begin(), relativeIndexVec.end(), more_than_rank());
-        vecToOutput.push_back(relativeIndexVec);
+        std::vector<RelativeIndex> bufferVector(relativeIndexVec.begin(), relativeIndexVec.begin() + convertJson.GetResponseLimit());
+        vecToOutput.push_back(bufferVector);
     }
 
     return vecToOutput;
