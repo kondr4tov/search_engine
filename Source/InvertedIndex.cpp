@@ -65,6 +65,8 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
     TestInvertedIndexFunctionality(docs, requests, expected);
 }
 
+std::mutex m;
+
 void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, std::vector<Entry>>& freq_dictionary) {
 
     std::transform(str.begin(), str.end(), str.begin(),
@@ -89,7 +91,6 @@ void IndexInsideUpdate(std::string str, int numberOfDoc, std::map<std::string, s
 
     std::map<std::string, std::vector<Entry>> myMap;
     Entry entry;
-    std::mutex m;
 
     //fill the map
     for(auto i : result) {

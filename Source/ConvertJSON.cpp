@@ -83,7 +83,7 @@ void ConvertJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> ans
             else if (i > 9 && i < 99) str = "request0" + std::to_string(i+1);
             else str = "request" + std::to_string(i+1);
 
-            if(answers[i][k].second != 0) {
+            if(answers[i][k].first != 999999999) {
                 j["answers"][str] = { { "results" , true }, {"relevance" , {{"docid" , answers[i][k].first}, {"rank" , answers[i][k].second }}}};
             }
             else j["answers"][str] = { "results" , false };

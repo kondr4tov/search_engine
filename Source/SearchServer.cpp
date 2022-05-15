@@ -13,11 +13,11 @@ const vector<string> request = {"milk water", "sugar"};
 const std::vector<vector<RelativeIndex>> expected = {
         {
                 {2, 1},
-                {0, 0.7},
-                {1, 0.3}
+                {0, 0.699999988},
+                {1, 0.300000012}
         },
         {
-                {}
+                {999999999,0}
         }
 };
 InvertedIndex idx;
@@ -56,9 +56,6 @@ const vector<string> request = {"moscow is the capital of russia"};
             {
                     {7, 1},
                     {14, 1},
-                    {0, 0.66},
-                    {1, 0.66},
-                    {2, 0.66}
             }
 };
 InvertedIndex idx;
@@ -110,10 +107,16 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         }
 
         std::vector<int> docs;
+        std::vector<RelativeIndex> relativeIndexVec;
+        std::multimap<int, int> toRelevant;
+        RelativeIndex relativeIndex;
 
-        auto it1 = reverseUniqList.begin();
+        auto it1 = reverseUniqList.rbegin();
         if(_index.freq_dictionary.count(it1->second) == 0) {
-            vecToOutput.emplace_back();
+            relativeIndex.doc_id = 999999999;
+            relativeIndex.rank = 0;
+            relativeIndexVec.push_back(relativeIndex);
+            vecToOutput.push_back(relativeIndexVec);
             continue;
         }
         else {
@@ -122,9 +125,6 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             }
         }
 
-        std::vector<RelativeIndex> relativeIndexVec;
-        std::map<float, int> toRelevant;
-        RelativeIndex relativeIndex;
 
         for(int i = 0; i < docs.size(); i++) {
             int counter = 0;
@@ -135,7 +135,8 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
                     }
                 }
             }
-            toRelevant.insert(std::make_pair(counter, docs[i]));
+            std::pair<int, int> myPair(std::make_pair(counter, docs[i]));
+            toRelevant.insert(myPair);
         }
 
         auto it2 = toRelevant.rbegin();
