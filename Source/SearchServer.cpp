@@ -117,7 +117,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         auto it1 = reverseUniqList.rbegin();
         if(_index.freq_dictionary.count(it1->second) == 0) {
-            relativeIndex.doc_id = 999999999;
+            relativeIndex.doc_id = 999999999; //unreal doc_id for catch it in answers.json
             relativeIndex.rank = 0;
             relativeIndexVec.push_back(relativeIndex);
             vecToOutput.push_back(relativeIndexVec);
@@ -159,8 +159,21 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         }
 
         std::sort(relativeIndexVec.begin(), relativeIndexVec.end(), more_than_rank());
-        std::vector<RelativeIndex> bufferVector(relativeIndexVec.begin(), relativeIndexVec.begin() + convertJson.GetResponseLimit());
-        vecToOutput.push_back(bufferVector);
+
+        std::sort(relativeIndexVec.begin(), relativeIndexVec.end(), [](const RelativeIndex& dot1, const RelativeIndex& dot2) -> bool
+                  {
+                      if(dot1.rank == dot2.rank) return dot1.doc_id < dot2.doc_id;
+                  }
+        );
+
+        if(relativeIndexVec.size() > 4) {
+            std::vector<RelativeIndex> bufferVector(relativeIndexVec.begin(),
+                                                    relativeIndexVec.begin() + convertJson.GetResponseLimit());
+            vecToOutput.push_back(bufferVector);
+        }
+        else {
+            vecToOutput.push_back(relativeIndexVec);
+        }
     }
 
     return vecToOutput;

@@ -1,5 +1,6 @@
 #include "../Headers/InvertedIndex.h"
 #include <gtest/gtest.h>
+#include <mutex>
 
 using namespace std;
 void TestInvertedIndexFunctionality(
@@ -146,6 +147,14 @@ std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
 
     Entry entry;
     std::vector<Entry> vec = {};
+
+    for(auto it = freq_dictionary.begin(); it != freq_dictionary.end(); it++) {
+        std::sort(it->second.begin(), it->second.end(), [](const Entry& dot1, const Entry& dot2) -> bool
+                  {
+                      return dot1.doc_id < dot2.doc_id;
+                  }
+        );
+    }
 
     if(freq_dictionary.count(word) != 0) {
         for (int i = 0; i < freq_dictionary.find(word)->second.size(); i++) {
