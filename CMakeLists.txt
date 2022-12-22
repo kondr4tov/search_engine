@@ -4,24 +4,20 @@ project(search_engine)
 set(CMAKE_CXX_STANDARD 14)
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(nlohmann_json)
 
 include(FetchContent)
-FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json
+        GIT_TAG v3.10.5
 )
 
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-set(gtest_disable_pthreads on)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-enable_testing()
+FetchContent_MakeAvailable(json)
 
-add_executable(search_engine main.cpp Headers/InvertedIndex.h Source/InvertedIndex.cpp Headers/ConvertJSON.h Source/ConvertJSON.cpp Headers/SearchServer.h Source/SearchServer.cpp)
+add_subdirectory(tests)
 
-target_link_libraries(search_engine PRIVATE nlohmann_json::nlohmann_json gtest_main)
+add_executable(search_engine main.cpp Headers/InvertedIndex.h Source/InvertedIndex.cpp Headers/ConvertJSON.h Source/ConvertJSON.cpp Headers/SearchServer.h Source/SearchServer.cpp Tests/test_searchServer.cpp Tests/test_Invertedindex.cpp)
 
-include(GoogleTest)
+target_link_libraries(search_engine PRIVATE gtest_main nlohmann_json)
+
 gtest_discover_tests(search_engine)
 
