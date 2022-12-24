@@ -36,7 +36,7 @@ TEST(TestCaseInvertedIndex, TestBasic2) {
             "milk milk milk milk water water water",
             "milk water water",
             "milk milk milk milk milk water water water water water",
-            "Americano Cappuccino"
+            "americano cappuccino"
     };
     const vector<string> requests = {"milk", "water", "cappuccino"};
     const vector<vector<Entry>> expected = {
@@ -64,4 +64,3 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
     };
     TestInvertedIndexFunctionality(docs, requests, expected);
 }
-

@@ -49,8 +49,6 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         auto it1 = reverseUniqList.rbegin();
         if(_index.freq_dictionary.count(it1->second) == 0) {
-            RelativeIndex emptyRelInd;
-            relativeIndexVec.push_back(emptyRelInd);
             vecToOutput.push_back(relativeIndexVec);
             continue;
         }
@@ -79,13 +77,9 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         float absRel = it2->first;
 
         for(auto it = toRelevant.begin(); it != toRelevant.end(); it++) {
-            float otnRel = (it->first / absRel) + 0.04;
-            std::string helperStr = std::to_string(otnRel);
-            std::stringstream out;
-            out << std::fixed << std::setprecision(1) << std::stof(helperStr);
-            float otnRel2 = std::stof(out.str());
+            float otnRel = (it->first / absRel);
             relativeIndex.doc_id = it->second;
-            relativeIndex.rank = otnRel2;
+            relativeIndex.rank = otnRel;
             relativeIndexVec.push_back(relativeIndex);
         }
 
